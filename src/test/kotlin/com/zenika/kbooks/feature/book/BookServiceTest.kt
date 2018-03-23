@@ -1,22 +1,27 @@
 package com.zenika.kbooks.feature.book
 
+import com.nhaarman.mockito_kotlin.*
 import com.zenika.kbooks.feature.author.Author
 import com.zenika.kbooks.feature.author.IAuthorRepository
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
+import com.nhaarman.mockito_kotlin.any
 import org.springframework.test.context.junit4.SpringRunner
 import java.util.*
 import javax.ws.rs.NotFoundException
+import kotlin.test.assertEquals
+import kotlin.test.fail
 
+/**
+ * Book service test class.
+ */
 @RunWith(SpringRunner::class)
 class BookServiceTest {
 
     @Mock
-    private lateinit var IAuthorRepository: IAuthorRepository
+    private lateinit var authorRepository: IAuthorRepository
     @Mock
     private lateinit var bookRepository: IBookRepository
     @InjectMocks
@@ -24,44 +29,56 @@ class BookServiceTest {
 
     @Test
     fun testGetBook() {
-        val book = Book(id = 1)
-        Mockito.`when`(bookRepository.findById(1)).thenReturn(Optional.of(book))
+        /* Given */
+        val bookId = 1L
+        whenever(bookRepository.findById(bookId)).thenReturn(Optional.of(Book(id = bookId)))
 
-        val result = bookService.getBook(1)
+        /* When */
+        val result = bookService.getBook(bookId)
 
-        Assert.assertEquals(book.id, result.id)
+        /* Then */
+        assertEquals(bookId, result.id)
     }
 
-    @Test
-    fun testGetBookNotFound() {
-        Mockito.`when`(bookRepository.findById(1)).thenReturn(Optional.empty())
+    @Test(expected = NotFoundException::class)
+    fun testGetBookWhenBookIsNotFound() {
+        /* Given */
+        val bookId = 2L
+        whenever(bookRepository.findById(bookId)).thenReturn(Optional.empty())
 
-        try {
-            bookService.getBook(1)
-            Assert.fail("Not found exception must have been thrown")
-        } catch(e: NotFoundException) {
-            // We expect this exception.
-        }
+        /* When */
+        bookService.getBook(bookId)
+
+        /* Then */
+        fail("NotFoundException was not thrown")
     }
 
     @Test
     fun testCreateBook() {
+        /* Given */
         val bookId = 2L
-        Mockito.`when`(bookRepository.save(Mockito.any(Book::class.java))).thenReturn(Book(id = bookId))
-        Mockito.`when`(IAuthorRepository.findById(5)).thenReturn(Optional.of(Author(id = 5)))
+        val authorId = 5L
+        whenever(bookRepository.save(any<Book>())).thenReturn(Book(id = bookId))
+        whenever(authorRepository.findById(5)).thenReturn(Optional.of(Author(id = authorId)))
 
-        val result = bookService.createBook(BookDto(authorId = 5))
-        Assert.assertEquals(bookId, result)
+        /* When */
+        val result = bookService.createBook(BookDto(authorId = authorId))
+
+        /* Then */
+        assertEquals(bookId, result)
     }
 
     @Test
     fun testUpdateBook() {
+        /* Given */
         val bookId = 1L;
         val book = Book(id = bookId)
-        Mockito.`when`(bookRepository.findById(bookId)).thenReturn(Optional.of(book))
+        whenever(bookRepository.findById(bookId)).thenReturn(Optional.of(book))
 
+        /* When */
         bookService.updateBook(bookId, BookDto())
 
-        Mockito.verify(bookRepository).findById(bookId)
+        /* Then */
+        verify(bookRepository).findById(bookId)
     }
 }
