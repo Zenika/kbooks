@@ -21,16 +21,12 @@ class BookServiceTest {
 
     @Test
     fun testGetBook() {
-        val book = Book(
-                id = 1,
-                title = "My book",
-                publication = LocalDate.now(),
-                author = "Me")
-
+        val book = Book(id = 1)
         Mockito.`when`(bookRepository.findById(1)).thenReturn(Optional.of(book))
 
         val result = bookService.getBook(1)
-        Assert.assertNotNull(result)
+
+        Assert.assertEquals(book.id, result.id)
     }
 
     @Test

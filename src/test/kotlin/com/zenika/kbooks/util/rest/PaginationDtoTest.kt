@@ -13,7 +13,7 @@ class PaginationDtoTest {
         val pagination = PaginationDto(page = 0, size = 2, sort = null)
         val pageable = pagination.toPageable()
 
-        Assert.assertEquals(1, pageable.pageNumber)
+        Assert.assertEquals(0, pageable.pageNumber)
     }
 
     @Test
