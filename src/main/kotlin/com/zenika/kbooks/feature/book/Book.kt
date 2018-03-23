@@ -7,7 +7,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 /**
- * JPA Book entity.
+ * JPA Book entity. All parameters have a default value because Hibernate need an empty constructor.
  */
 @Entity
 @Table(name = "book")
