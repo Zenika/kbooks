@@ -1,5 +1,6 @@
 package com.zenika.kbooks.feature.book
 
+import com.zenika.kbooks.feature.author.IAuthorRepository
 import com.zenika.kbooks.util.rest.PageDto
 import com.zenika.kbooks.util.rest.PaginationDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,43 +14,62 @@ import javax.ws.rs.*
 @Service
 class BookService {
     @Autowired
+    private lateinit var authorRepository: IAuthorRepository
+    @Autowired
     private lateinit var bookRepository: IBookRepository
 
     @Transactional(readOnly = true)
     fun getBook(@PathParam("id") id: Long): BookDto {
-        return bookRepository.findById(id)
-                .map { BookDtoConverter().convert(it) }
-                .orElseThrow(::NotFoundException)
+        // Find book in repository and throw exception if it was not found.
+        return bookRepository.findById(id).map { BookDtoConverter.convert(it) }.orElse(null)
+                ?: throw NotFoundException("Book $id does not exist")
     }
 
     @Transactional(readOnly = true)
     fun getBooks(pagination: PaginationDto): PageDto<BookDto> {
-        var page = bookRepository.findAll(pagination.toPageable())
-        return BookDtoConverter().convert(page)
+        val page = bookRepository.findAll(pagination.toPageable())
+        return BookDtoConverter.convert(page)
     }
 
     @Transactional
     fun createBook(dto: BookDto): Long? {
+        // If author id is null throw exception.
+        val authorId = dto.authorId ?: throw BadRequestException("Author id must not be null")
+        // Find author in database and throw exception if it does not exist.
+        val author = authorRepository.findById(authorId).orElse(null)
+                ?: throw BadRequestException("Author ${dto.authorId} does not exist")
+
+        // Create book.
         val book = Book()
         book.title = dto.title
         book.publication = dto.publication
-        book.author = dto.author
-
+        book.author = author
         return bookRepository.save(book).id
     }
 
     @Transactional
     fun updateBook(@PathParam("id") id: Long, dto: BookDto) {
-        val book = bookRepository.findById(id).orElseThrow(::NotFoundException)
+        // Look for book in database and throw exception if it was not found.
+        val book = bookRepository.findById(id).orElse(null)
+                ?: throw NotFoundException()
+
+        // Update book.
         book.title = dto.title
         book.publication = dto.publication
-        book.author = dto.author
+
+        // Update author if is was changed.
+        if(dto.authorId != null && dto.authorId == book.author?.id) {
+            val author = authorRepository.findById(dto.authorId!!).orElse(null)
+                    ?: throw BadRequestException()
+            book.author = author
+        }
+
         bookRepository.save(book)
     }
 
     @Transactional
     fun deleteBook(@PathParam("id") id: Long) {
-        val book = bookRepository.findById(id).orElseThrow(::NotFoundException)
+        val book = bookRepository.findById(id).orElse(null) ?: throw NotFoundException()
         bookRepository.delete(book)
     }
 }

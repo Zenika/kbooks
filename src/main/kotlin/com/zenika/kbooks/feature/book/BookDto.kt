@@ -8,4 +8,5 @@ import java.time.LocalDate
 data class BookDto(var id: Long? = null,
                 var title: String? = null,
                 var publication: LocalDate? = null,
-                var author: String? = null)
+                var authorId: Long? = null,
+                var authorName: String? = null)

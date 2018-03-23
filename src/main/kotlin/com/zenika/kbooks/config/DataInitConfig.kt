@@ -1,5 +1,7 @@
 package com.zenika.kbooks.config
 
+import com.zenika.kbooks.feature.author.Author
+import com.zenika.kbooks.feature.author.IAuthorRepository
 import com.zenika.kbooks.feature.book.Book
 import com.zenika.kbooks.feature.book.IBookRepository
 import org.springframework.boot.CommandLineRunner
@@ -14,16 +16,22 @@ import java.time.LocalDate
 class DataInitConfig {
 
     @Bean
-    fun init(bookRepository: IBookRepository) = CommandLineRunner {
+    fun init(IAuthorRepository: IAuthorRepository, bookRepository: IBookRepository) = CommandLineRunner {
+        val stephenKing = Author(name = "Stephen King")
+        IAuthorRepository.save(stephenKing)
+
+        val robinHobb = Author(name = "Robin Hobb")
+        IAuthorRepository.save(robinHobb)
+
         bookRepository.save(Book(
                 title = "22/11/63",
                 publication = LocalDate.parse("2011-11-08"),
-                author = "Stephen King"
+                author = stephenKing
         ))
         bookRepository.save(Book(
                 title = "L'assassin Royal",
                 publication = LocalDate.parse("1998-12-17"),
-                author = "Robin Hobb"
+                author = robinHobb
         ))
     }
 }

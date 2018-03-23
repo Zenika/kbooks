@@ -5,7 +5,11 @@ import com.zenika.kbooks.util.rest.IDtoConverter
 /**
  * Convert book entity to book dto.
  */
-class BookDtoConverter : IDtoConverter<Book, BookDto> {
+object BookDtoConverter : IDtoConverter<Book, BookDto> {
     override fun convert(entity: Book): BookDto =
-        BookDto(id = entity.id, title = entity.title, publication = entity.publication, author = entity.author)
+        BookDto(id = entity.id,
+                title = entity.title,
+                publication = entity.publication,
+                authorId = entity.author?.id,
+                authorName = entity.author?.name ?: "")
 }
