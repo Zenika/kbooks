@@ -1,10 +1,15 @@
 package com.zenika.kbooks.feature.book
 
+import com.zenika.kbooks.util.rest.PageDto
+import com.zenika.kbooks.util.rest.PaginationDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
+/**
+ * Rest endpoint for books.
+ */
 @Path("/book")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,7 +24,7 @@ class BookResource {
     fun getBook(@PathParam("id") id: Long) = bookService.getBook(id)
 
     @GET
-    fun getBooks(): List<BookDto> = bookService.getBooks()
+    fun getBooks(@BeanParam pagination: PaginationDto): PageDto<BookDto> = bookService.getBooks(pagination)
 
     @POST
     fun createBook(dto: BookDto): Long? = bookService.createBook(dto)

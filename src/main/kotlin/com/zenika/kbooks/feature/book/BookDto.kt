@@ -3,7 +3,7 @@ package com.zenika.kbooks.feature.book
 import java.time.LocalDate
 
 /**
- * Book dto that will be sent to clients.
+ * Book dto that will serialized and sent to clients.
  */
 data class BookDto(var id: Long? = null,
                 var title: String? = null,
