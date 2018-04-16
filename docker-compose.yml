@@ -1,0 +1,33 @@
+version: '3'
+services:
+  mysqldb:
+    image: mysql:5.7
+    environment:
+      - MYSQL_DATABASE=kbooks
+      - MYSQL_USER=kbooks_user
+      - MYSQL_PASSWORD=384x4J3DjAQt33lN3yTP
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    expose:
+      - 3306
+  author:
+    build: ./backend/author
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysqldb
+    environment:
+      - JDBC_DRIVER=com.mysql.jdbc.Driver
+      - JDBC_URL=jdbc:mysql://mysqldb:3306/kbooks?useSSL=false
+      - JDBC_USER=kbooks_user
+      - JDBC_PASSWORD=384x4J3DjAQt33lN3yTP
+  book:
+      build: ./backend/book
+      ports:
+        - 8081:8080
+      depends_on:
+        - mysqldb
+      environment:
+        - JDBC_DRIVER=com.mysql.jdbc.Driver
+        - JDBC_URL=jdbc:mysql://mysqldb:3306/kbooks?useSSL=false
+        - JDBC_USER=kbooks_user
+        - JDBC_PASSWORD=384x4J3DjAQt33lN3yTP
