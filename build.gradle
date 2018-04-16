@@ -51,6 +51,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
     runtime('com.h2database:h2')
+    runtime('mysql:mysql-connector-java')
     providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
     testCompile("org.jetbrains.kotlin:kotlin-test")
     testCompile('org.springframework.boot:spring-boot-starter-test')
